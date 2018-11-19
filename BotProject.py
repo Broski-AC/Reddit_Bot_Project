@@ -30,26 +30,31 @@ subreddit = reddit.subreddit("UrodeleTestReddit")
 for submission in subreddit.hot(limit=5):
     print("Title: ", submission.title)
     print("User: ", submission.author)
-    
+
         #Want to search through comments and find book titles in quotation marks
         #"." will match any character except a newline character
         #\s matches whitespace characters
         #+matches one or more times
-        #for comment in subreddit.comments():
-            #if re.search("X", comment.body, re.IGNORECASE):
+        #May want to use search() or findall()
 
 
     #Searches through expressions for a specific keyword in the body of the comment ignoring case
     for comment in submission.comments:
         if comment.id not in replied_comments:
-            if re.search("testing", comment.body, re.IGNORECASE):
-                    #Responds to prompt if we detect the keyword
-                    comment.reply("Test Successful!")
-                    #Lets us know on the terminal this worked correcly
-                    print("Bot replied to: ", comment)
-                    #Adds id to the list
-                    replied_comments.append(comment.id)
-
+            #r helps us turn the string literal into a raw string (useful for when you would otherwise need to use a mass amount of escape characters). * specifies that we want to match the character class denoted by [] 0 or more times. The ^ ensures we match all the characters that are not quotes.
+            #So, in all this says "Hey, we have a raw string surrounded by quotes, and we want to group all the characters that do not match " multiple times if they exist.
+            title = re.findall(r'"([^"]*)"', comment.body, re.I)
+            if title:
+                    for book in title:
+                        #Responds to prompt if we detect the keyword
+                        #This causes multiple comments if there is more than one book title in quotes.
+                        comment.reply(book)
+                        #Lets us know on the terminal this worked correcly
+                        print("Bot replied to: ", comment)
+                        #Adds id to the list
+                        replied_comments.append(comment.id)
+            else:
+                print("There was nothing there")
 
 #Writing all lists values into the text file. This is likely because the list will be cleared each time we run the code, so therefore we need a more permanent place to store the ids we replied to
 with open("replied_comments.txt", "w") as f:
