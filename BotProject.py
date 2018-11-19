@@ -40,8 +40,7 @@ for submission in subreddit.hot(limit=5):
 
 
     #Searches through expressions for a specific keyword in the body of the comment ignoring case
-    comments = submission.comments
-    for comment in comments:
+    for comment in submission.comments:
         if comment.id not in replied_comments:
             if re.search("testing", comment.body, re.IGNORECASE):
                     #Responds to prompt if we detect the keyword
